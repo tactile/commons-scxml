@@ -18,6 +18,7 @@ package org.apache.commons.scxml2;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,8 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
+import javax.script.ScriptException;
 import org.apache.commons.scxml2.env.SimpleContext;
+import org.apache.commons.scxml2.env.javascript.JSContext;
 import org.apache.commons.scxml2.env.javascript.JSEvaluator;
 import org.apache.commons.scxml2.io.ContentParser;
 import org.apache.commons.scxml2.model.Data;
@@ -314,11 +316,16 @@ public class SCInstance implements Serializable {
         if (data == null) {
             return;
         }
+        List<Data> toSet=new ArrayList<>();
         for (Data datum : data) {
-            if (getGlobalContext() == ctx && ctx.has(datum.getId())) {
-                // earlier/externally defined 'initial' value found: do not overwrite
-                continue;
-            }
+          if (getGlobalContext() == ctx && ctx.has(datum.getId())) {
+              // earlier/externally defined 'initial' value found: do not overwrite
+              continue;
+          } else {
+            toSet.add(datum);
+          }
+        }
+        for (Data datum : toSet) {
             Object value = null;
             boolean setValue = false;
             // prefer "src" over "expr" over "inline"
@@ -374,6 +381,13 @@ public class SCInstance implements Serializable {
                     ctx.setLocal(datum.getId(), value);
                 }
             }
+        }
+        if (evaluator instanceof JSEvaluator) {
+          try {
+            ((JSEvaluator)evaluator).copyJavascriptGlobalsToScxmlContext((JSContext) ctx);
+          } catch (ScriptException e) {
+            throw new RuntimeException("error while copying js context back to scxml.", e);
+          }
         }
     }
 

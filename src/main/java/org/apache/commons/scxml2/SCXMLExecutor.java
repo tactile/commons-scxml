@@ -18,6 +18,7 @@ package org.apache.commons.scxml2;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -30,8 +31,10 @@ import org.apache.commons.scxml2.model.EnterableState;
 import org.apache.commons.scxml2.model.ModelException;
 import org.apache.commons.scxml2.model.Observable;
 import org.apache.commons.scxml2.model.SCXML;
+import org.apache.commons.scxml2.model.SimpleTransition;
 import org.apache.commons.scxml2.model.TransitionTarget;
 import org.apache.commons.scxml2.semantics.SCXMLSemanticsImpl;
+import org.apache.commons.scxml2.semantics.Step;
 
 /**
  * <p>The SCXML &quot;engine&quot; that executes SCXML documents. The
@@ -571,4 +574,19 @@ public class SCXMLExecutor implements SCXMLIOProcessor {
             log.debug(sb.toString());
         }
     }
+   
+    /**
+     * returns true if the given event is expected by some state.
+     * @param event
+     * @return
+     * @throws ModelException
+     */
+    public boolean isWaitingFor(TriggerEvent event) throws ModelException {
+      Step step = new Step(event);
+      ((SCXMLSemanticsImpl) semantics).setSystemEventVariable(exctx.getScInstance(), event, false);
+      ((SCXMLSemanticsImpl) semantics).selectTransitions(exctx, step);
+      List<SimpleTransition> trs = step.getTransitList();
+      return trs != null && !trs.isEmpty();
+    }
+    
 }
