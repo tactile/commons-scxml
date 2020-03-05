@@ -38,7 +38,7 @@ public abstract class AbstractBaseEvaluator implements Evaluator, Serializable {
     /**
      * Unique context variable name used for temporary reference to assign data (thus must be a valid variable name)
      */
-    private static final String ASSIGN_VARIABLE_NAME = "a"+ UUID.randomUUID().toString().replace('-','x');
+    protected static final String ASSIGN_VARIABLE_NAME = "a"+ UUID.randomUUID().toString().replace('-','x');
 
     /**
      * @see Evaluator#evalAssign(Context, String, Object)

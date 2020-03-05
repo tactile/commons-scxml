@@ -18,6 +18,7 @@ package org.apache.commons.scxml2;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -314,11 +315,16 @@ public class SCInstance implements Serializable {
         if (data == null) {
             return;
         }
+        List<Data> toSet=new ArrayList<>();
         for (Data datum : data) {
-            if (getGlobalContext() == ctx && ctx.has(datum.getId())) {
-                // earlier/externally defined 'initial' value found: do not overwrite
-                continue;
-            }
+          if (getGlobalContext() == ctx && ctx.has(datum.getId())) {
+              // earlier/externally defined 'initial' value found: do not overwrite
+              continue;
+          } else {
+            toSet.add(datum);
+          }
+        }
+        for (Data datum : toSet) {
             Object value = null;
             boolean setValue = false;
             // prefer "src" over "expr" over "inline"

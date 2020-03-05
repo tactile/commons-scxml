@@ -209,6 +209,18 @@ public class JSEvaluator extends AbstractBaseEvaluator {
      */
     @Override
     public Object eval(Context context, String expression) throws SCXMLExpressionException {
+      return eval(context,expression,true);
+    }
+    /**
+     * see {@link #eval(Context, String)}, in addition adds one extra arg that if false
+     * it avoids calling the function to copy the javascript context back scxml.
+     * @param context
+     * @param expression
+     * @param copyBackToScxmlContext
+     * @return
+     * @throws SCXMLExpressionException
+     */
+    public Object eval(Context context, String expression, boolean copyBackToScxmlContext) throws SCXMLExpressionException {
         if (expression == null) {
             return null;
         }
@@ -220,8 +232,10 @@ public class JSEvaluator extends AbstractBaseEvaluator {
             JSContext effectiveContext = getEffectiveContext((JSContext)context);
             ScriptContext scriptContext = getScriptContext(effectiveContext);
             Object ret = getEngine().eval(expression, scriptContext);
+            if (copyBackToScxmlContext) {
             // copy Javascript global variables to SCXML context.
             copyJavascriptGlobalsToScxmlContext(scriptContext.getBindings(ScriptContext.ENGINE_SCOPE), effectiveContext);
+            }
             return ret;
         } catch (Exception e) {
             String exMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getCanonicalName();
@@ -290,20 +304,33 @@ public class JSEvaluator extends AbstractBaseEvaluator {
             }
         }
     }
-
+    
     /**
      * When directly injecting data in the local context, wrap Java array and List objects with a native Javascript
      * Array
+     * This calls the eval with argument set to avoid copying the javascript context back
+     * to the scxml context as this is an injection from scxml into javascript.
      * @param ctx SCXML context
      * @param id context id of the data
      * @param data data to inject
      * @throws SCXMLExpressionException if a malformed expression is encountered
      */
     public void injectData(final Context ctx, final String id, final Object data) throws SCXMLExpressionException {
+      try {
+        ctx.getVars().put(ASSIGN_VARIABLE_NAME, data);
+        if (data != null && (data.getClass().isArray() || data instanceof List)) {
+          eval(ctx, id + "=Java.from(" + ASSIGN_VARIABLE_NAME + ")", false);
+        } else {
+          eval(ctx, id + "=" + ASSIGN_VARIABLE_NAME, false);
+        }
+      } finally {
+        ctx.getVars().remove(ASSIGN_VARIABLE_NAME);
+      }
+      /*
         ctx.setLocal(id, data);
         if (data != null && (data.getClass().isArray() || data instanceof List)) {
             // use Nashorn extension: Java.from function
             ctx.setLocal(id, eval(ctx, "Java.from("+id+")"));
-        }
+        }*/
     }
 }

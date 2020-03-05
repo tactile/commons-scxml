@@ -583,6 +583,7 @@ public class SCXMLExecutor implements SCXMLIOProcessor {
      */
     public boolean isWaitingFor(TriggerEvent event) throws ModelException {
       Step step = new Step(event);
+      ((SCXMLSemanticsImpl) semantics).setSystemEventVariable(exctx.getScInstance(), event, false);
       ((SCXMLSemanticsImpl) semantics).selectTransitions(exctx, step);
       List<SimpleTransition> trs = step.getTransitList();
       return trs != null && !trs.isEmpty();
