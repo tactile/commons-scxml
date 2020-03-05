@@ -305,6 +305,15 @@ public class JSEvaluator extends AbstractBaseEvaluator {
         }
     }
     
+  public void copyJavascriptGlobalsToScxmlContext(final JSContext context) throws ScriptException {
+    JSContext effectiveContext = getEffectiveContext((JSContext) context);
+    ScriptContext scriptContext = getScriptContext(effectiveContext);
+    // copy Javascript global variables to SCXML context.
+    copyJavascriptGlobalsToScxmlContext(scriptContext.getBindings(ScriptContext.ENGINE_SCOPE),
+        effectiveContext);
+  }
+
+    
     /**
      * When directly injecting data in the local context, wrap Java array and List objects with a native Javascript
      * Array

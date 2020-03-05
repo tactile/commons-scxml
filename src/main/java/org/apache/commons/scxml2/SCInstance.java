@@ -26,8 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
+import javax.script.ScriptException;
 import org.apache.commons.scxml2.env.SimpleContext;
+import org.apache.commons.scxml2.env.javascript.JSContext;
 import org.apache.commons.scxml2.env.javascript.JSEvaluator;
 import org.apache.commons.scxml2.io.ContentParser;
 import org.apache.commons.scxml2.model.Data;
@@ -380,6 +381,13 @@ public class SCInstance implements Serializable {
                     ctx.setLocal(datum.getId(), value);
                 }
             }
+        }
+        if (evaluator instanceof JSEvaluator) {
+          try {
+            ((JSEvaluator)evaluator).copyJavascriptGlobalsToScxmlContext((JSContext) ctx);
+          } catch (ScriptException e) {
+            throw new RuntimeException("error while copying js context back to scxml.", e);
+          }
         }
     }
 
