@@ -267,7 +267,7 @@ public class JSEvaluatorTest {
     public void testScriptFunctions() throws Exception {
         context.set("FIVE", 5);
         Assertions.assertEquals(5,context.get("FIVE"));
-        Assertions.assertEquals(120, evaluator.eval(context,FUNCTION), "Invalid function result");
+        Assertions.assertEquals(120d, (double)evaluator.eval(context,FUNCTION), "Invalid function result");
     }
 
 
