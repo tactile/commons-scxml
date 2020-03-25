@@ -92,6 +92,7 @@ public final class SCXMLConstants {
     public static final String ATTR_SENDID = "sendid";
     public static final String ATTR_SENDIDEXPR = "sendidexpr";
     public static final String ATTR_SRC = "src";
+    public static final String ATTR_PERSIST = "persist";
     public static final String ATTR_SRCEXPR = "srcexpr";
     public static final String ATTR_TARGET = "target";
     public static final String ATTR_TARGETEXPR = "targetexpr";

@@ -18,7 +18,9 @@ package org.apache.commons.scxml2.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The class in this SCXML object model that corresponds to the SCXML
@@ -53,6 +55,18 @@ public class Datamodel implements Serializable {
    public final List<Data> getData() {
        return data;
    }
+   
+  public Map<String, Data> getDataAsMap() {
+    Map<String, Data> ret = null;
+    List<Data> data = getData();
+    if (data != null && !data.isEmpty()) {
+      ret = new HashMap<>();
+      for (Data d : data) {
+        ret.put(d.getId(), d);
+      }
+    }
+    return ret;
+  }
 
    /**
     * Add a Data.

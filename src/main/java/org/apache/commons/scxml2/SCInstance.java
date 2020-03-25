@@ -146,7 +146,7 @@ public class SCInstance implements Serializable {
         this.stateConfiguration = new StateConfiguration();
         this.currentStatus = new Status(stateConfiguration);
     }
-
+    
     /**
      * (re)Initializes the state machine instance, clearing all variable contexts, histories and current status,
      * and clones the SCXML root datamodel into the root context.
@@ -178,8 +178,28 @@ public class SCInstance implements Serializable {
 
         initialized = true;
     }
+    
+  public void saveDataInContext(final Map<String, Object> data) {
+    if (data != null) {
+      if (globalContext == null) {
+        initializeDatamodel(data);
+      } else {
+        for (String key : data.keySet()) {
+          if (globalContext.has(key)) {
+            globalContext.set(key, data.get(key));
+            if (evaluator instanceof JSEvaluator) {
+              try {
+                ((JSEvaluator) evaluator).injectData(getGlobalContext(), key, data.get(key));
+              } catch (Exception e) {
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 
-    protected void initializeDatamodel(final Map<String, Object> data) {
+    public void initializeDatamodel(final Map<String, Object> data) {
         if (globalContext == null) {
             // Clone root datamodel
             Datamodel rootdm = stateMachine.getDatamodel();

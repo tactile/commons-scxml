@@ -43,6 +43,8 @@ public class Data implements ParsedValueContainer {
      * The expression that evaluates to the value of this data instance.
      */
     private String expr;
+    
+    private boolean persist;
 
     /**
      * The data element body value, or the value from external {@link #getSrc()}, may be null.
@@ -119,6 +121,14 @@ public class Data implements ParsedValueContainer {
      */
     public final void setParsedValue(final ParsedValue dataValue) {
         this.dataValue = dataValue;
+    }
+    
+    public boolean isPersist() {
+      return persist;
+    }
+    
+    public void setPersist(boolean persist) {
+      this.persist = persist;
     }
 }
 

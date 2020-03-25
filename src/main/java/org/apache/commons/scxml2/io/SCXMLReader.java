@@ -1081,6 +1081,7 @@ public final class SCXMLReader {
         datum.setId(readRequiredAV(reader, SCXMLConstants.ELEM_DATA, SCXMLConstants.ATTR_ID));
         final String expr = readAV(reader, SCXMLConstants.ATTR_EXPR);
         final String src = readAV(reader, SCXMLConstants.ATTR_SRC);
+        final Boolean persist = readBooleanAV(reader, SCXMLConstants.ELEM_DATA, SCXMLConstants.ATTR_PERSIST);
 
         if (expr != null) {
             if (src != null) {
@@ -1094,7 +1095,8 @@ public final class SCXMLReader {
         } else {
             readParsedValue(reader, configuration, datum, false);
         }
-        dm.addData(datum);
+    datum.setPersist(persist != null ? persist : false);
+    dm.addData(datum);
     }
 
     /**
