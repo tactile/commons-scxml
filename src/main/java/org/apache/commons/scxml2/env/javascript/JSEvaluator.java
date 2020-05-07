@@ -18,8 +18,9 @@
 package org.apache.commons.scxml2.env.javascript;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
-
+import java.util.Set;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -212,7 +213,7 @@ public class JSEvaluator extends AbstractBaseEvaluator {
       return eval(context,expression,true);
     }
     /**
-     * see {@link #eval(Context, String)}, in addition adds one extra arg that if false
+     * see {@link #eval(Context, String)}, in addition adds one extra arg that if falsex
      * it avoids calling the function to copy the javascript context back scxml.
      * @param context
      * @param expression
@@ -296,13 +297,16 @@ public class JSEvaluator extends AbstractBaseEvaluator {
      * @param jsContext The SCXML context to copy/merge the variables into
      */
     private void copyJavascriptGlobalsToScxmlContext(final Bindings global, final JSContext jsContext) {
-        if (global != null) {
-            for (String key : global.keySet()) {
-                if (!SCXML_SYSTEM_CONTEXT.equals(key)) {
-                    jsContext.set(key, global.get(key));
-                }
-            }
+      if (global != null) {
+        Set<String> varsToCopy = new HashSet<>(jsContext.getVars().keySet());
+        varsToCopy.addAll(global.keySet());
+        varsToCopy.removeAll(jsContext.getSystemContext().getVars().keySet());
+        for (String key : varsToCopy) {
+          if (!SCXML_SYSTEM_CONTEXT.equals(key) && global.containsKey(key)) {
+            jsContext.set(key, global.get(key));
+          }
         }
+      }
     }
     
   public void copyJavascriptGlobalsToScxmlContext(final JSContext context) throws ScriptException {
