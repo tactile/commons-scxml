@@ -589,4 +589,9 @@ public class SCXMLExecutor implements SCXMLIOProcessor {
       return trs != null && !trs.isEmpty();
     }
     
+  public boolean isLegalConfiguration(final Set<EnterableState> states) {
+    return ((SCXMLSemanticsImpl) semantics).isLegalConfiguration(states, getErrorReporter());
+  }
+
+    
 }

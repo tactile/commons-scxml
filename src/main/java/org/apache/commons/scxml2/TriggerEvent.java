@@ -39,11 +39,12 @@ public class TriggerEvent implements Serializable {
      * @deprecated use {@link EventBuilder instead}
      */
     public TriggerEvent(final String name, final int type) {
-        this(name, type, null, null, null, null, null);
+        this(name, type, null, null, null, null, null,-1);
     }
 
     TriggerEvent(final String name, final int type, final String sendId, final String origin,
-                        final String originType, final String invokeId, final Object data) {
+                        final String originType, final String invokeId, final Object data,
+                        final long timestamp) {
         this.name = name != null ? name.trim() : "";
         this.type = type;
         this.sendId = sendId;
@@ -51,6 +52,7 @@ public class TriggerEvent implements Serializable {
         this.originType = originType;
         this.invokeId = invokeId;
         this.data = data;
+        this.timestamp = timestamp;
     }
 
     /**
@@ -126,6 +128,7 @@ public class TriggerEvent implements Serializable {
     private final String originType;
     private final String invokeId;
     private final Object data;
+    private final long timestamp;
 
     public String getName() {
         return name;
@@ -153,6 +156,10 @@ public class TriggerEvent implements Serializable {
 
     public Object getData() {
         return data;
+    }
+    
+    public long getTimestamp() {
+      return timestamp;
     }
 
     private static boolean equals(final Object a, final Object b) {

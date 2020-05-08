@@ -402,10 +402,19 @@ public class SCInstance implements Serializable {
                 }
             }
         }
+        
         if (evaluator instanceof JSEvaluator) {
+          /**
+           * copying all variables set in this call with the result of the javascript evaluations. this
+           * way is more accurate as some variables hold special meanings in javascript and do not end
+           * up in the standard bindings used by the function
+           * {@link JSEvaluator#copyJavascriptGlobalsToScxmlContext(JSContext)}.
+           */
           try {
-            ((JSEvaluator)evaluator).copyJavascriptGlobalsToScxmlContext((JSContext) ctx);
-          } catch (ScriptException e) {
+            for (Data datum : data) {
+              ctx.set(datum.getId(), ((JSEvaluator)evaluator).eval(ctx, datum.getId(),false));
+            }
+          } catch (Exception e) {
             throw new RuntimeException("error while copying js context back to scxml.", e);
           }
         }
